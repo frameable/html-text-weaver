@@ -1,0 +1,18 @@
+{
+  "name": "html-text-projection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha -u tdd test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "basichtml": "^0.22.1"
+  },
+  "devDependencies": {
+    "basichtml": "^0.22.1",
+    "mocha": "^6.1.4"
+  }
+}
