@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "basichtml": "^0.22.1"
+    "basichtml": "^0.22.1",
+    "linkifyjs": "^2.1.8"
   },
   "devDependencies": {
     "basichtml": "^0.22.1",

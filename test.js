@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { Document } = require('basichtml');
 global.document = new Document();
-const { encode, decode, escapeHTML, unescapeHTML } = require('./index');
+const { encode, decode, escapeHTML, unescapeHTML, LINK_CLASS } = require('./index');
 
 
 suite('encode', () => {
@@ -19,7 +19,7 @@ suite('encode', () => {
     assert.deepEqual(encodedText, {
       text: 'my bold text',
       meta: [
-        ['b', 3, 7]
+        ['b', 3, 7, null]
       ]
     });
   });
@@ -29,9 +29,9 @@ suite('encode', () => {
     assert.deepEqual(encodedText, {
       text: 'she told him that he was the worst!',
       meta: [
-        ['i', 4, 8],
-        ['b', 29, 35],
-        ['i', 29, 35],
+        ['i', 4, 8, null],
+        ['b', 29, 35, null],
+        ['i', 29, 35, null],
       ]
     });
   });
@@ -77,6 +77,16 @@ suite('encode-decode', () => {
     const inputs = [
       `<h1>Rich Text Format</h1><b>Richard Brodie</b>, <b>Charles Simonyi</b>, and <b>David Luebbert</b>, members of the <i>Microsoft Word</i> development team, developed the original RTF in the middle to late 1980s. Its syntax was influenced by the TeX typesetting language.`,
       `<h1>Hey, you! <b><i>Get out of there!</i></b></h1>`
+    ];
+    for (const input of inputs) {
+      assert.equal(input, decode(encode(input)));
+    }
+  });
+
+  test('links', () => {
+
+    const inputs = [
+      `<a class="${LINK_CLASS}" href="http://google.com">link to google</a>`
     ];
     for (const input of inputs) {
       assert.equal(input, decode(encode(input)));

@@ -1,9 +1,11 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
+const LINK_CLASS = 'linkified';
 
 const TAG_NAME = 0;
 const OPEN_OFFSET = 1;
 const CLOSE_OFFSET = 2;
+const HREF = 3;
 
 var { document } = (typeof global === 'undefined' ? this : global);
 
@@ -13,7 +15,8 @@ const normalizedTagNames = {
   em: 'i',
   i: 'i',
   h1: 'h1',
-  h2: 'h2'
+  h2: 'h2',
+  a: 'a',
 };
 
 function encode(html) {
@@ -28,7 +31,10 @@ function encode(html) {
     for (const child of node.childNodes) {
       if (child.nodeType == ELEMENT_NODE) {
         if (child.tagName in normalizedTagNames) {
-          const marker = [child.tagName, text.length, null];
+          const href = child.tagName === 'a'
+            ? child.getAttribute('href')
+            : null;
+          const marker = [child.tagName, text.length, null, href];
           meta.push(marker);
           _walk(child);
           marker[2] = text.length;
@@ -40,7 +46,7 @@ function encode(html) {
         text += child.textContent;
       }
     }
-  }
+  };
 
   _walk(el);
 
@@ -57,7 +63,11 @@ function decode({ text, meta }) {
   for (i in text) {
     i = parseInt(i);
     while (meta[mi] && i == meta[mi][OPEN_OFFSET]) {
-      html += `<${meta[mi][TAG_NAME]}>`;
+      if (meta[mi][TAG_NAME] === 'a') {
+        html += `<${meta[mi][TAG_NAME]} class="${LINK_CLASS}" href="${meta[mi][HREF]}">`;
+      } else {
+        html += `<${meta[mi][TAG_NAME]}>`;
+      }
       stack.push(meta[mi]);
       mi++;
     }
@@ -111,4 +121,5 @@ module.exports = {
   encode,
   escapeHTML,
   unescapeHTML,
-}
+  LINK_CLASS
+};
