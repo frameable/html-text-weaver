@@ -1,7 +1,9 @@
 # html-text-projection
 Encode html to its component plain-text and meta style parts
 
-```
+```javascript
+{ encode, decode } = require('html-text-projection');
+
 const html = '<h1>Hey, you! <b><i>Get out of there!</i></b></h1>';
 
 encode(html);
