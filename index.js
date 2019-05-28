@@ -29,7 +29,7 @@ function encode(html) {
 
   const _walk = (node) => {
     for (const child of node.childNodes) {
-      if (child.nodeType == ELEMENT_NODE) {
+      if (child.nodeType === ELEMENT_NODE) {
         if (child.tagName in normalizedTagNames) {
           const href = child.tagName === 'a'
             ? child.getAttribute('href')
@@ -42,7 +42,7 @@ function encode(html) {
           _walk(child);
         }
       }
-      if (child.nodeType == TEXT_NODE) {
+      if (child.nodeType === TEXT_NODE) {
         text += child.textContent;
       }
     }
@@ -60,9 +60,8 @@ function decode({ text, meta }) {
 
   const stack = [];
 
-  for (i in text) {
-    i = parseInt(i);
-    while (meta[mi] && i == meta[mi][OPEN_OFFSET]) {
+  for (let i=0; i < text.length; i++) {
+    while (meta[mi] && i === meta[mi][OPEN_OFFSET]) {
       if (meta[mi][TAG_NAME] === 'a') {
         html += `<${meta[mi][TAG_NAME]} class="${LINK_CLASS}" href="${meta[mi][HREF]}">`;
       } else {
@@ -72,8 +71,8 @@ function decode({ text, meta }) {
       mi++;
     }
     html += escapeHTML(text[i]);
-    while (stack.length && (i + 1) == stack[stack.length - 1][CLOSE_OFFSET]) {
-      html += `</${stack[stack.length - 1][TAG_NAME]}>`
+    while (stack.length && (i + 1) === stack[stack.length - 1][CLOSE_OFFSET]) {
+      html += `</${stack[stack.length - 1][TAG_NAME]}>`;
       stack.length = stack.length - 1;
     }
   }
