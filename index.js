@@ -5,79 +5,93 @@ const LINK_CLASS = 'linkified';
 const TAG_NAME = 0;
 const OPEN_OFFSET = 1;
 const CLOSE_OFFSET = 2;
-const HREF = 3;
+const ATTRIBUTES = 3;
+
+const KEY = 0;
+const VALUE = 1;
 
 var { document } = (typeof global === 'undefined' ? this : global);
 
-const normalizedTagNames = {
-  b: 'b',
-  strong: 'b',
-  em: 'i',
-  i: 'i',
-  h1: 'h1',
-  h2: 'h2',
-  a: 'a',
-};
 
-function encode(html) {
+class Weaver {
 
-  const el = document.createElement('div');
-  el.innerHTML = html;
-
-  let text = '';
-  const meta = [];
-
-  const _walk = (node) => {
-    for (const child of node.childNodes) {
-      if (child.nodeType === ELEMENT_NODE) {
-        if (child.tagName in normalizedTagNames) {
-          const href = child.tagName === 'a'
-            ? child.getAttribute('href')
-            : null;
-          const marker = [child.tagName, text.length, null, href];
-          meta.push(marker);
-          _walk(child);
-          marker[2] = text.length;
-        } else {
-          _walk(child);
-        }
-      }
-      if (child.nodeType === TEXT_NODE) {
-        text += child.textContent;
-      }
-    }
-  };
-
-  _walk(el);
-
-  return { text, meta };
-}
-
-function decode({ text, meta }) {
-
-  let html = '';
-  let mi = 0;
-
-  const stack = [];
-
-  for (let i=0; i < text.length; i++) {
-    while (meta[mi] && i === meta[mi][OPEN_OFFSET]) {
-      if (meta[mi][TAG_NAME] === 'a') {
-        html += `<${meta[mi][TAG_NAME]} class="${LINK_CLASS}" href="${meta[mi][HREF]}">`;
-      } else {
-        html += `<${meta[mi][TAG_NAME]}>`;
-      }
-      stack.push(meta[mi]);
-      mi++;
-    }
-    html += escapeHTML(text[i]);
-    while (stack.length && (i + 1) === stack[stack.length - 1][CLOSE_OFFSET]) {
-      html += `</${stack[stack.length - 1][TAG_NAME]}>`;
-      stack.length = stack.length - 1;
-    }
+  constructor({ normalizedTagNames, tagAttributes }) {
+    this.normalizedTagNames = normalizedTagNames || {
+      b: 'b',
+      strong: 'b',
+      em: 'i',
+      i: 'i',
+      h1: 'h1',
+      h2: 'h2',
+      a: 'a',
+    };
+    this.tagAttributes = tagAttributes || {
+      a: ['href', 'class']
+    };
   }
 
-  return html;
+  unweave(html) {
+
+    const el = document.createElement('div');
+    el.innerHTML = html;
+
+    let text = '';
+    const meta = [];
+
+    const _walk = (node) => {
+      for (const child of node.childNodes) {
+        if (child.nodeType === ELEMENT_NODE) {
+          if (child.tagName in normalizedTagNames) {
+            const href = child.tagName === 'a'
+              ? child.getAttribute('href')
+              : null;
+            for (const attributeName of this.tagAttributes[child.tagName] || []) {
+              attributes.push([ attributeName, child.getAttribute(attributeName) ]);
+            }
+            const marker = [child.tagName, text.length, null, attributes];
+            meta.push(marker);
+            _walk(child);
+            marker[2] = text.length;
+          } else {
+            _walk(child);
+          }
+        }
+        if (child.nodeType === TEXT_NODE) {
+          text += child.textContent;
+        }
+      }
+    };
+
+    _walk(el);
+
+    return { text, meta };
+  }
+
+  weave({ text, meta }) {
+
+    let html = '';
+    let mi = 0;
+
+    const stack = [];
+
+    for (let i=0; i < text.length; i++) {
+      while (meta[mi] && i === meta[mi][OPEN_OFFSET]) {
+        const attributes = meta[mi][ATTRIBUTES]
+          .map(a => ` ${a[KEY]}=${JSON.stringify(a[VALUE])}`) || '';
+        html += `<${meta[mi][TAG_NAME]}${attributes}>
+        stack.push(meta[mi]);
+        mi++;
+      }
+      html += escapeHTML(text[i]);
+      while (stack.length && (i + 1) === stack[stack.length - 1][CLOSE_OFFSET]) {
+        html += `</${stack[stack.length - 1][TAG_NAME]}>`;
+        stack.length = stack.length - 1;
+      }
+    }
+
+    return html;
+  }
+
 }
 
 const escapeHTML = function (s) {
@@ -113,12 +127,8 @@ const unescapeHTML= function (s) {
 };
 
 
-
-
 module.exports = {
-  decode,
-  encode,
+  Weaver,
   escapeHTML,
-  unescapeHTML,
-  LINK_CLASS
+  unescapeHTML
 };

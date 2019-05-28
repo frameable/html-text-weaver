@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { Document } = require('basichtml');
 global.document = new Document();
-const { encode, decode, escapeHTML, unescapeHTML, LINK_CLASS } = require('./index');
+const { encode, decode, escapeHTML, unescapeHTML } = require('./index');
 
 
 suite('encode', () => {
@@ -86,7 +86,7 @@ suite('encode-decode', () => {
   test('links', () => {
 
     const inputs = [
-      `<a class="${LINK_CLASS}" href="http://google.com">link to google</a>`
+      `<a class="linkified" href="http://google.com">link to google</a>`
     ];
     for (const input of inputs) {
       assert.equal(input, decode(encode(input)));
