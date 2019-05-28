@@ -1,13 +1,14 @@
 const assert = require('assert');
 const { Document } = require('basichtml');
 global.document = new Document();
-const { encode, decode, escapeHTML, unescapeHTML } = require('./index');
+const { Weaver, escapeHTML, unescapeHTML } = require('./index');
 
+const weaver = new Weaver();
 
 suite('encode', () => {
 
   test('alert', () => {
-    const encodedText = encode(escapeHTML('<script>alert(1)</script>'))
+    const encodedText = weaver.encode(escapeHTML('<script>alert(1)</script>'))
     assert.deepEqual(encodedText, {
       text: '<script>alert(1)</script>',
       meta: []
@@ -15,7 +16,7 @@ suite('encode', () => {
   });
 
   test('basic tags', () => {
-    const encodedText = encode('my <b>bold</b> text');
+    const encodedText = weaver.encode('my <b>bold</b> text');
     assert.deepEqual(encodedText, {
       text: 'my bold text',
       meta: [
@@ -24,8 +25,18 @@ suite('encode', () => {
     });
   });
 
+  test('links', () => {
+    const encodedText = weaver.encode('<a href="yahoo.com" class="linkified">YAHOO</a>');
+    assert.deepEqual(encodedText, {
+      text: 'YAHOO',
+      meta: [
+        ['a', 0, 5, [ ['href', 'yahoo.com'], ['class', 'linkified'] ] ]
+      ]
+    });
+  });
+
   test('stacked tags', () => {
-    const encodedText = encode('she <i>told</i> him that he was the <b><i>worst!</i></b>')
+    const encodedText = weaver.encode('she <i>told</i> him that he was the <b><i>worst!</i></b>')
     assert.deepEqual(encodedText, {
       text: 'she told him that he was the worst!',
       meta: [
@@ -40,7 +51,7 @@ suite('encode', () => {
 suite('decode', () => {
 
   test('alert', () => {
-    const decodedText = decode({
+    const decodedText = weaver.decode({
       text: '<script>alert(1)</script>',
       meta: []
     });
@@ -48,7 +59,7 @@ suite('decode', () => {
   });
 
   test('basic tags', () => {
-    const decodedText = decode({
+    const decodedText = weaver.decode({
       text: 'my bold text',
       meta: [
         ['b', 3, 7]
@@ -58,7 +69,7 @@ suite('decode', () => {
   });
 
   test('stacked tags', () => {
-    const decodedText = decode({
+    const decodedText = weaver.decode({
       text: 'she told him that he was the worst!',
       meta: [
         ['i', 4, 8],
@@ -79,17 +90,17 @@ suite('encode-decode', () => {
       `<h1>Hey, you! <b><i>Get out of there!</i></b></h1>`
     ];
     for (const input of inputs) {
-      assert.equal(input, decode(encode(input)));
+      assert.equal(input, weaver.decode(weaver.encode(input)));
     }
   });
 
   test('links', () => {
 
     const inputs = [
-      `<a class="linkified" href="http://google.com">link to google</a>`
+      `<a href="http://google.com" class="linkified">link to google</a>`
     ];
     for (const input of inputs) {
-      assert.equal(input, decode(encode(input)));
+      assert.equal(input, weaver.decode(weaver.encode(input)));
     }
   });
 });

@@ -12,10 +12,9 @@ const VALUE = 1;
 
 var { document } = (typeof global === 'undefined' ? this : global);
 
-
 class Weaver {
 
-  constructor({ normalizedTagNames, tagAttributes }) {
+  constructor({ normalizedTagNames, tagAttributes }={}) {
     this.normalizedTagNames = normalizedTagNames || {
       b: 'b',
       strong: 'b',
@@ -30,7 +29,7 @@ class Weaver {
     };
   }
 
-  unweave(html) {
+  encode(html) {
 
     const el = document.createElement('div');
     el.innerHTML = html;
@@ -41,11 +40,10 @@ class Weaver {
     const _walk = (node) => {
       for (const child of node.childNodes) {
         if (child.nodeType === ELEMENT_NODE) {
-          if (child.tagName in normalizedTagNames) {
-            const href = child.tagName === 'a'
-              ? child.getAttribute('href')
-              : null;
+          if (child.tagName in this.normalizedTagNames) {
+            let attributes = null;
             for (const attributeName of this.tagAttributes[child.tagName] || []) {
+              attributes = attributes || [];
               attributes.push([ attributeName, child.getAttribute(attributeName) ]);
             }
             const marker = [child.tagName, text.length, null, attributes];
@@ -67,7 +65,7 @@ class Weaver {
     return { text, meta };
   }
 
-  weave({ text, meta }) {
+  decode({ text, meta }) {
 
     let html = '';
     let mi = 0;
@@ -76,9 +74,9 @@ class Weaver {
 
     for (let i=0; i < text.length; i++) {
       while (meta[mi] && i === meta[mi][OPEN_OFFSET]) {
-        const attributes = meta[mi][ATTRIBUTES]
-          .map(a => ` ${a[KEY]}=${JSON.stringify(a[VALUE])}`) || '';
-        html += `<${meta[mi][TAG_NAME]}${attributes}>
+        const attributes = (meta[mi][ATTRIBUTES] || [])
+          .map(a => ` ${a[KEY]}=${JSON.stringify(a[VALUE])}`).join('') || '';
+        html += `<${meta[mi][TAG_NAME]}${attributes}>`;
         stack.push(meta[mi]);
         mi++;
       }
