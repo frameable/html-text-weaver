@@ -1,4 +1,4 @@
-# html-text-projection
+# html-text-weaver
 Encode html to its component plain-text and meta style parts
 
 ```javascript
