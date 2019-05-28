@@ -1,6 +1,6 @@
 {
-  "name": "html-text-projection",
-  "version": "1.0.0",
+  "name": "html-text-weaver",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
