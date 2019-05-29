@@ -68,6 +68,13 @@ suite('encode', () => {
 
 suite('decode', () => {
 
+  test('errors with bad inputs', () => {
+    const noMeta = () => weaver.decode({ text: 'test' });
+    assert.throws(noMeta, Error);
+    const noText = () => weaver.decode({ meta: [] });
+    assert.throws(noText, Error);
+  });
+
   test('alert', () => {
     const decodedText = weaver.decode({
       text: '<script>alert(1)</script>',
@@ -139,6 +146,7 @@ suite('linkify', () => {
   });
 
 
+
 });
 
 suite('encode-decode', () => {
@@ -164,6 +172,10 @@ suite('encode-decode', () => {
     }
   });
 
+  test('works with empty string', () => {
+    const html = weaver.decode(weaver.encode(''));
+    assert.equal(html, '');
+  });
 
   test('newlines', () => {
     const inputs = [

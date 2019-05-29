@@ -73,6 +73,8 @@ class Weaver {
   }
 
   decode({ text, meta }) {
+    if (text === undefined) throw new Error('no text passed to decode');
+    if (meta === undefined) throw new Error('no meta passed to decode');
 
     const links = linkify.findLinkOffsets(text);
 
