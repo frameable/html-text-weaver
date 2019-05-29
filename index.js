@@ -48,7 +48,10 @@ class Weaver {
             let attributes = null;
             for (const attributeName of this.tagAttributes[tagName] || []) {
               attributes = attributes || [];
-              attributes.push([ attributeName, child.getAttribute(attributeName) ]);
+              const attrValue = child.getAttribute(attributeName);
+              if (attrValue) {
+                attributes.push([ attributeName, attrValue ]);
+              }
             }
             const marker = [tagName, text.length, null, attributes];
             meta.push(marker);
