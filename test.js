@@ -130,7 +130,13 @@ suite('linkify', () => {
     assert.equal(html, '<b>visit</b> <a href="http://yahoo.com" class="linkified"><i>yahoo.com</i></a> and <a href="http://gmx.net" class="linkified">gmx.net</a> today!');
   });
 
-  
+  test('round trip without adding extra links', () => {
+    const html = weaver.decode(weaver.encode(weaver.decode({
+      text: 'yahoo.com',
+      meta: []
+    })));
+    assert.equal(html, '<a href="http://yahoo.com" class="linkified">yahoo.com</a>');
+  });
 
 
 });

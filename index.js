@@ -96,6 +96,9 @@ class Weaver {
           candidateIndex = i + 1;
       }
       candidateIndex = candidateIndex || 0;
+      if (JSON.stringify(meta[candidateIndex]) === JSON.stringify(anchorMeta)) {
+        continue LINK;
+      }
       meta.splice(candidateIndex, 0, anchorMeta);
     }
 
