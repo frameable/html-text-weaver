@@ -10,7 +10,7 @@ const ATTRIBUTES = 3;
 const KEY = 0;
 const VALUE = 1;
 
-var { document } = (typeof global === 'undefined' ? this : global);
+const { document } = (typeof global === 'undefined' ? this : global);
 
 class Weaver {
 
@@ -40,13 +40,14 @@ class Weaver {
     const _walk = (node) => {
       for (const child of node.childNodes) {
         if (child.nodeType === ELEMENT_NODE) {
-          if (child.tagName in this.normalizedTagNames) {
+          const tagName = child.tagName.toLowerCase();
+          if (tagName in this.normalizedTagNames) {
             let attributes = null;
-            for (const attributeName of this.tagAttributes[child.tagName] || []) {
+            for (const attributeName of this.tagAttributes[tagName] || []) {
               attributes = attributes || [];
               attributes.push([ attributeName, child.getAttribute(attributeName) ]);
             }
-            const marker = [child.tagName, text.length, null, attributes];
+            const marker = [tagName, text.length, null, attributes];
             meta.push(marker);
             _walk(child);
             marker[2] = text.length;
