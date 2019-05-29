@@ -16,7 +16,7 @@ suite('encode', () => {
   });
 
   test('alert', () => {
-    const encodedText = weaver.encode(escapeHTML('<script>alert(1)</script>'))
+    const encodedText = weaver.encode(escapeHTML('<script>alert(1)</script>'));
     assert.deepEqual(encodedText, {
       text: '<script>alert(1)</script>',
       meta: []
@@ -30,6 +30,14 @@ suite('encode', () => {
       meta: [
         ['b', 3, 7, null]
       ]
+    });
+  });
+
+  test('trim the input', () => {
+    const encodedText = weaver.encode('   my padded text   \n');
+    assert.deepEqual(encodedText,{
+      text: 'my padded text',
+      meta: [],
     });
   });
 
@@ -54,7 +62,7 @@ suite('encode', () => {
   });
 
   test('stacked tags', () => {
-    const encodedText = weaver.encode('she <i>told</i> him that he was the <b><i>worst!</i></b>')
+    const encodedText = weaver.encode('she <i>told</i> him that he was the <b><i>worst!</i></b>');
     assert.deepEqual(encodedText, {
       text: 'she told him that he was the worst!',
       meta: [
@@ -102,7 +110,7 @@ suite('decode', () => {
         ['i', 31, 37],
       ]
     });
-    assert.equal(decodedText, 'she <i>told</i> him that<br/> he<br/> was the <b><i>worst!</i></b>')
+    assert.equal(decodedText, 'she <i>told</i> him that<br/> he<br/> was the <b><i>worst!</i></b>');
     });
 
   test('stacked tags', () => {
@@ -114,7 +122,7 @@ suite('decode', () => {
         ['i', 29, 35],
       ]
     });
-    assert.equal(decodedText, 'she <i>told</i> him that he was the <b><i>worst!</i></b>')
+    assert.equal(decodedText, 'she <i>told</i> him that he was the <b><i>worst!</i></b>');
   });
 });
 
@@ -201,6 +209,6 @@ suite('encode-decode', () => {
       assert.equal(input, weaver.decode(weaver.encode(input)));
     }
 
-  })
+  });
 });
 
