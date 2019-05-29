@@ -10,7 +10,7 @@ const ATTRIBUTES = 3;
 const KEY = 0;
 const VALUE = 1;
 
-const { document } = (typeof global === 'undefined' ? this : global);
+const { document } = (typeof global === 'undefined' ? eval('this') : eval('global'));
 
 class Weaver {
 
@@ -32,7 +32,7 @@ class Weaver {
   encode(html) {
 
     const el = document.createElement('div');
-    el.innerHTML = html;
+    el.innerHTML = html.trim();
 
     let text = '';
     const meta = [];
@@ -41,7 +41,9 @@ class Weaver {
       for (const child of node.childNodes) {
         if (child.nodeType === ELEMENT_NODE) {
           const tagName = child.tagName.toLowerCase();
-          if (tagName in this.normalizedTagNames) {
+          if (tagName === 'br') {
+            text += '\n';
+          } else if (tagName in this.normalizedTagNames) {
             let attributes = null;
             for (const attributeName of this.tagAttributes[tagName] || []) {
               attributes = attributes || [];
@@ -88,7 +90,7 @@ class Weaver {
       }
     }
 
-    return html;
+    return html.replace(/\n/g, '<br/>');
   }
 
 }
