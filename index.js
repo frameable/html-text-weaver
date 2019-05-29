@@ -11,6 +11,8 @@ const KEY = 0;
 const VALUE = 1;
 
 var { document } = (typeof global === 'undefined' ? this : global);
+const linkify = require('./linkify');
+
 
 class Weaver {
 
@@ -66,6 +68,36 @@ class Weaver {
   }
 
   decode({ text, meta }) {
+
+    const links = linkify.findLinkOffsets(text);
+
+    console.log("LINKS", links);
+
+    LINK: for (const link of links) {
+      const anchorMeta = [
+        'a',
+        link.offsets[0],
+        link.offsets[1],
+        [['href', link.href], ['class', LINK_CLASS]]
+      ];
+
+      const _between = (a, b, c) => a < b && b < c;
+
+      for (const m of meta) {
+        const startInside = _between(link.offsets[0], m[OPEN_OFFSET], link.offsets[1]);
+        const endInside = _between(link.offsets[0], m[CLOSE_OFFSET], link.offsets[1]);
+        // if we find partial overlaps, bail on this link
+        if (startInside ^ endInside) continue LINK;
+      }
+
+      let candidateIndex = null;
+      for (const [i, m] of meta.entries()) {
+        if (m[OPEN_OFFSET] < link.offsets[0])
+          candidateIndex = i + 1;
+      }
+      candidateIndex = candidateIndex || 0;
+      meta.splice(candidateIndex, 0, anchorMeta);
+    }
 
     let html = '';
     let mi = 0;

@@ -7,6 +7,14 @@ const weaver = new Weaver();
 
 suite('encode', () => {
 
+  test('bold char', () => {
+    const encodedText = weaver.encode('<b>a</b>');
+    assert.deepEqual(encodedText, {
+      text: 'a',
+      meta: [ ['b', 0, 1, null] ]
+    });
+  });
+
   test('alert', () => {
     const encodedText = weaver.encode(escapeHTML('<script>alert(1)</script>'))
     assert.deepEqual(encodedText, {
@@ -79,6 +87,30 @@ suite('decode', () => {
     });
     assert.equal(decodedText, 'she <i>told</i> him that he was the <b><i>worst!</i></b>')
   });
+});
+
+suite('linkify', () => {
+
+  test('basic link', () => {
+    const html = weaver.decode({
+      text: 'yahoo.com',
+      meta: []
+    });
+    assert.equal(html, '<a href="http://yahoo.com" class="linkified">yahoo.com</a>');
+  });
+
+  test('link on top of style', () => {
+    const html = weaver.decode({
+      text: 'visit yahoo.com and gmx.net today!',
+      meta: [ ['b', 0, 5], ['i', 6, 15] ]
+    });
+
+    assert.equal(html, '<b>visit</b> <a href="http://yahoo.com" class="linkified"><i>yahoo.com</i></a> and <a href="http://gmx.net" class="linkified">gmx.net</a> today!');
+  });
+
+  
+
+
 });
 
 suite('encode-decode', () => {
