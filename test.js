@@ -43,6 +43,16 @@ suite('encode', () => {
     });
   });
 
+  test('newlines', () => {
+    const encodedText = weaver.encode('<a href="yahoo.com" class="linkified">YAHOO\nYAHOO</a>\nhey!');
+    assert.deepEqual(encodedText, {
+      text: 'YAHOO\nYAHOO\nhey!',
+      meta: [
+        ['a', 0, 11, [ ['href', 'yahoo.com'], ['class', 'linkified'] ] ]
+      ]
+    });
+  });
+
   test('stacked tags', () => {
     const encodedText = weaver.encode('she <i>told</i> him that he was the <b><i>worst!</i></b>')
     assert.deepEqual(encodedText, {
@@ -75,6 +85,18 @@ suite('decode', () => {
     });
     assert.equal(decodedText, 'my <b>bold</b> text');
   });
+
+  test('newlines', () => {
+    const decodedText = weaver.decode({
+      text: 'she told him that\n he\n was the worst!',
+      meta: [
+        ['i', 4, 8],
+        ['b', 31, 37],
+        ['i', 31, 37],
+      ]
+    });
+    assert.equal(decodedText, 'she <i>told</i> him that<br/> he<br/> was the <b><i>worst!</i></b>')
+    });
 
   test('stacked tags', () => {
     const decodedText = weaver.decode({
@@ -135,5 +157,16 @@ suite('encode-decode', () => {
       assert.equal(input, weaver.decode(weaver.encode(input)));
     }
   });
+
+
+  test('newlines', () => {
+    const inputs = [
+      `<a href="http://google.com" class="linkified">link to google<br/>another</a>`
+    ];
+    for (const input of inputs) {
+      assert.equal(input, weaver.decode(weaver.encode(input)));
+    }
+
+  })
 });
 
