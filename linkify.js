@@ -1,6 +1,6 @@
 const linkify = require('linkifyjs');
 
-var _tokenLength = function(token) {
+const _tokenLength = function(token) {
 
   let len = 0;
 
@@ -17,9 +17,9 @@ var _tokenLength = function(token) {
   _walk(token);
 
   return len;
-}
+};
 
-var tokenize = function tokenize(str) {
+const tokenize = function tokenize(str) {
   return linkify.parser.run(linkify.scanner.run(str));
 };
 
@@ -27,19 +27,15 @@ var tokenize = function tokenize(str) {
 
 const findLinkOffsets = (str) => {
 
-  var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  const tokens = tokenize(str);
+  const filtered = [];
+  let offset = 0;
 
-  var tokens = tokenize(str);
-  var filtered = [];
-  var offset = 0;
-
-  console.log("TOKENS", JSON.stringify(tokens));
-
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i];
-    if (token.isLink && (!type || token.type === type)) {
-      var obj = token.toObject();
-      var valueLen = _tokenLength(token);
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+    if (token.isLink) {
+      const obj = token.toObject();
+      const valueLen = _tokenLength(token);
       obj.offsets = [ offset, offset + valueLen ];
       filtered.push(obj);
     }

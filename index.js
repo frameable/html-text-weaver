@@ -71,8 +71,6 @@ class Weaver {
 
     const links = linkify.findLinkOffsets(text);
 
-    console.log("LINKS", links);
-
     LINK: for (const link of links) {
       const anchorMeta = [
         'a',
