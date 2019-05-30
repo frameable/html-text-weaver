@@ -162,6 +162,11 @@ suite('linkify', () => {
     assert.equal(html, '<a href="http://yahoo.com" class="linkified">yahoo.com</a>');
   });
 
+  test("round trip without adding extra links when href doesn't match content", () => {
+    const html = weaver.decode(weaver.encode('<a href="notyahoo.com" class="linkified">yahoo.com</a>'));
+    assert.equal(html, '<a href="notyahoo.com" class="linkified">yahoo.com</a>');
+  });
+
   test('double round trip without adding extra links', () => {
     const html = weaver.decode(weaver.encode(weaver.decode(weaver.encode(weaver.decode({
       text: 'yahoo.com',

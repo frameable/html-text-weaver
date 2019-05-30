@@ -101,7 +101,7 @@ class Weaver {
           candidateIndex = i + 1;
       }
       candidateIndex = candidateIndex || 0;
-      if (JSON.stringify(meta[candidateIndex]) === JSON.stringify(anchorMeta)) {
+      if (meta[candidateIndex] && meta[candidateIndex][TAG_NAME].toLowerCase() === anchorMeta[TAG_NAME].toLowerCase()) {
         continue LINK;
       }
       meta.splice(candidateIndex, 0, anchorMeta);
