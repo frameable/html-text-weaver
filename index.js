@@ -87,6 +87,7 @@ class Weaver {
       ];
 
       const _between = (a, b, c) => a < b && b < c;
+      const _betweenOrEq = (a, b, c) => a <= b && b <= c;
 
       for (const m of meta) {
         const startInside = _between(link.offsets[0], m[OPEN_OFFSET], link.offsets[1]);
@@ -101,9 +102,13 @@ class Weaver {
           candidateIndex = i + 1;
       }
       candidateIndex = candidateIndex || 0;
-      if (meta[candidateIndex] && meta[candidateIndex][TAG_NAME].toLowerCase() === anchorMeta[TAG_NAME].toLowerCase()) {
-        continue LINK;
-      }
+
+      const enclosingMetaATags = meta
+        .filter(m => m[TAG_NAME].toLowerCase() === 'a')
+        .filter(m => _betweenOrEq(m[OPEN_OFFSET], candidateIndex, m[CLOSE_OFFSET]));
+
+      if (enclosingMetaATags.length) continue LINK;
+
       meta.splice(candidateIndex, 0, anchorMeta);
     }
 

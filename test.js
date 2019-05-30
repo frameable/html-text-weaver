@@ -167,6 +167,12 @@ suite('linkify', () => {
     assert.equal(html, '<a href="notyahoo.com" class="linkified">yahoo.com</a>');
   });
 
+  test("don't linkify when we are inside an a tag", () => {
+    const input = '<a href="notyahoo.com" class="linkified">A bunch of <i>stuff</i> yada<b>yahoo.com</b></a>';
+    const html = weaver.decode(weaver.encode(input));
+    assert.equal(html, input);
+  });
+
   test('double round trip without adding extra links', () => {
     const html = weaver.decode(weaver.encode(weaver.decode(weaver.encode(weaver.decode({
       text: 'yahoo.com',
@@ -174,7 +180,6 @@ suite('linkify', () => {
     })))));
     assert.equal(html, '<a href="http://yahoo.com" class="linkified">yahoo.com</a>');
   });
-
 
 });
 
