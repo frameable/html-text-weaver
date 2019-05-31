@@ -218,7 +218,18 @@ suite('encode-decode', () => {
     for (const input of inputs) {
       assert.equal(input, weaver.decode(weaver.encode(input)));
     }
+  });
 
+  test('no doubling up', () => {
+    const input = 'visit <a href="http://yahoo.com">yahoo.com</a> today!';
+    const decodedHtml = weaver.decode(weaver.encode(input));
+    assert.equal(decodedHtml, input);
+  });
+
+  test('no doubling doubling up', () => {
+    const input = 'visit <a href="http://yahoo.com">yahoo.com</a> today!';
+    const decodedHtml = weaver.decode(weaver.encode(weaver.decode(weaver.encode(input))));
+    assert.equal(decodedHtml, input);
   });
 });
 

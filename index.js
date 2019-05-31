@@ -105,7 +105,7 @@ class Weaver {
 
       const enclosingMetaATags = meta
         .filter(m => m[TAG_NAME].toLowerCase() === 'a')
-        .filter(m => _betweenOrEq(m[OPEN_OFFSET], candidateIndex, m[CLOSE_OFFSET]));
+        .filter(m => _betweenOrEq(m[OPEN_OFFSET], link.offsets[0], m[CLOSE_OFFSET]));
 
       if (enclosingMetaATags.length) continue LINK;
 
