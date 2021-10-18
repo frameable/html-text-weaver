@@ -1,13 +1,13 @@
 {
   "name": "html-text-weaver",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha -u tdd test"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "basichtml": "^0.22.1",
     "linkifyjs": "^2.1.8"
