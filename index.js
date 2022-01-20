@@ -10,7 +10,6 @@ const ATTRIBUTES = 3;
 const KEY = 0;
 const VALUE = 1;
 
-const { document } = (typeof global === 'undefined' ? eval('this') : eval('global'));
 const linkify = require('./linkify');
 
 class Weaver {
