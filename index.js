@@ -97,7 +97,7 @@ class Weaver {
 
       let candidateIndex = null;
       for (const [i, m] of meta.entries()) {
-        if (m[OPEN_OFFSET] < link.offsets[0])
+        if (m[OPEN_OFFSET] <= link.offsets[0])
           candidateIndex = i + 1;
       }
       candidateIndex = candidateIndex || 0;

@@ -142,7 +142,7 @@ suite('linkify', () => {
       meta: [ ['b', 0, 5], ['i', 6, 15] ]
     });
 
-    assert.equal(html, '<b>visit</b> <a href="http://yahoo.com" class="linkified"><i>yahoo.com</i></a> and <a href="http://gmx.net" class="linkified">gmx.net</a> today!');
+    assert.equal(html, '<b>visit</b> <i><a href="http://yahoo.com" class="linkified">yahoo.com</a></i> and <a href="http://gmx.net" class="linkified">gmx.net</a> today!');
   });
 
   test('ignore links with partially overlapping tags', () => {
@@ -151,7 +151,14 @@ suite('linkify', () => {
     const overlappingBefore = weaver.decode(weaver.encode('<i>ya</i>hoooo.com is great'));
     assert.equal(overlappingBefore, '<i>ya</i>hoooo.com is great');
     const notOverlapping = weaver.decode(weaver.encode('<b><i>yahoooo.com</i></b> is great'));
-    assert.equal(notOverlapping, '<a href="http://yahoooo.com" class="linkified"><b><i>yahoooo.com</i></b></a> is great');
+    assert.equal(notOverlapping, '<b><i><a href="http://yahoooo.com" class="linkified">yahoooo.com</a></i></b> is great');
+  });
+
+  test('linkify inside style', () => {
+    assert.equal(
+      weaver.decode(weaver.encode('<b>yahoo.com</b>')),
+      '<b><a href="http://yahoo.com" class="linkified">yahoo.com</a></b>'
+    );
   });
 
   test('round trip without adding extra links', () => {
